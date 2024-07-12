@@ -1,0 +1,12 @@
+version: '3'
+services:
+  ngnix:
+    container_name: ngnix
+    build:
+      context: ./requirements/ngnix/
+      dockerfile: ./requirements/ngnix/Dockerfile
+    expose:
+      - 443
+    ports:
+      - "8080:443"
+  
