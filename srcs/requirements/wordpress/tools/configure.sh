@@ -19,11 +19,13 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
 								 --title=$WP_TITLE \
 								 --admin_user=$WP_ADMIN \
 								 --admin_email=$WP_ADMIN_EMAIL \
-								 --admin_password=$WP_ADMIN_PASSWORD
-	wp user create "$WP_USER" \
+								 --admin_password=$WP_ADMIN_PASSWORD \
+								 --allow-root
+
+	wp user create "$WP_USER" dhussain@student.codam.nl \
 								--path="/var/www/html" \
 								--user_pass="$WP_PASS" \
-								--user_email="$WP_EMAIL"
+								--allow-root
 else
 	echo "Wordpress is installed!"
 fi
