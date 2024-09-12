@@ -1,14 +1,39 @@
-FROM debian:bullseye
+FROM debian:bookworm
 
+# Start installing packages
+RUN apt update -y
+RUN apt install -y php8.2 php8.2-common php8.2-fpm php8.2-mysql php8.2-cgi php8.2-gd php8.2-xml mariadb-client wget curl
 
-RUN apt-get update && apt-get upgrade -y
-RUN apt-get install -y curl php php7.4-fpm php-mysql mariadb-client netcat
+# Install Wordpress CLI
+RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+RUN chmod +x wp-cli.phar
+RUN mv wp-cli.phar /usr/local/bin/wp
 
-# copy the wordpress configuration script to the root directory in the container
-COPY ./script/wp_script.sh /
+# Copy needed files
+COPY ./tools/configure.sh ./
 
-# change the permission of the script to make it executable
-RUN  chmod +x wp_script.sh
+# Set working directory
+WORKDIR /var/www/html
 
-# define the entrypoint command to run when the container starts
-ENTRYPOINT ["./wp_conf.sh"]
+# Configure users
+RUN useradd -ms /bin/bash wordpress
+RUN mkdir -p /var/www/html
+RUN chown -R wordpress /var/www/html
+
+# Setup PHP
+RUN echo "listen=9000" >> /etc/php/8.2/fpm/pool.d/www.conf
+
+# Expose the ports.
+EXPOSE 9000
+
+# Set users and install wordpress
+USER wordpress
+
+# Execute entry point as the minimal user.
+ENTRYPOINT [ "sh", "/configure.sh" ]
+
+# Go back to ROOT because php-fpm doesn't work without root permissions
+USER root
+
+# Et voila!
+CMD [ "php-fpm8.2", "-F" ]

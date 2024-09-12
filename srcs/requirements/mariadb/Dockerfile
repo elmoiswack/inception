@@ -1,10 +1,24 @@
-FROM debian:bullseye
+FROM debian:bookworm
 
-RUN apt-get update && apt-get upgrade -y
-RUN apt-get install -y mariadb-server
+# Install packages
+RUN apt update -y
+RUN apt install -y mariadb-server
 
-COPY ./script/mariadb_script.sh /mdb-script.sh
+# Create directories for the mysql user
+RUN mkdir -p /var/run/mysqld /var/lib/mysql
+RUN chown -R mysql:mysql /var/run/mysqld /var/lib/mysql
 
-RUN chmod +x /mdb-script.sh
+# Copy mysql configuration to the container
+COPY ./conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
 
-ENTRYPOINT ["./mdb-script.sh"]
+# Configure and run configure.sh
+COPY --chown=root:root ./tools/configure.sh ./
+RUN chmod +x ./configure.sh
+
+# Expose some ports
+EXPOSE 3306
+
+ENTRYPOINT [ "bash", "configure.sh" ]
+
+# Et voila!
+CMD [ "mysqld", "--user=mysql", "--bind-address=0.0.0.0" ]

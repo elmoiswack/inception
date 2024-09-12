@@ -1,32 +1,26 @@
-WP_DATA = /home/dhussain/data/wordpress
-DB_DATA = /home/dhussain/data/mariadb
+DATA=/home/dhussain/data
 
 all: up
 
 up: build
-	@mkdir -p $(WP_DATA)
-	@mkdir -p $(DB_DATA)
-	docker-compose -f ./srcs/docker-compose.yml up -d
+	docker compose -f ./srcs/docker-compose.yml $@
 
 down:
-	docker-compose -f ./srcs/docker-compose.yml down
+	docker compose -f ./srcs/docker-compose.yml $@
 
-stop:
-	docker-compose -f ./srcs/docker-compose.yml stop
+build: $(DATA)
+	docker compose -f ./srcs/docker-compose.yml $@
 
-start:
-	docker-compose -f ./srcs/docker-compose.yml start
+$(DATA):
+	mkdir -p $(DATA)/wordpress $(DATA)/mariadb
 
-build:
-	docker-compose -f ./srcs/docker-compose.yml build
+clean: down
+	rm -rf $(DATA)
+	docker compose -f ./srcs/docker-compose.yml down -v
 
-clean:
-	@docker stop $$(docker ps -qa) || true
-	@docker rm $$(docker ps -qa) || true
-	@docker rmi -f $$(docker images -qa) || true
-	@docker volume rm $$(docker volume ls -q) || true
-	@docker network rm $$(docker network ls -q) || true
-	@sudo rm -rf $(WP_DATA) || true
-	@sudo rm -rf $(DB_DATA) || true
+fclean: clean
+	docker system prune -af
 
-re: clean up
+re: clean all
+
+.PHONY: up down build clean fclean re
