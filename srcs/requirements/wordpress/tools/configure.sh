@@ -10,8 +10,20 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
     done
 
 	wp --allow-root core download --path=/var/www/html
-	wp --allow-root config create --dbname=$DB_NAME --dbuser=$DB_USER --dbpass=$DB_PASS --dbhost=$DB_HOST --dbcharset='utf8'
-	wp --allow-root core install --url=$WP_DOMAIN --title=$WP_TITLE --admin_user=$WP_USER --admin_email=$WP_EMAIL --admin_password=$WP_PASS
+	wp --allow-root config create --dbname=$DB_NAME \
+									--dbuser=$DB_USER \
+									--dbpass=$DB_PASS \
+									--dbhost=$DB_HOST \
+									--dbcharset='utf8'
+	wp --allow-root core install --url=$WP_DOMAIN \
+								 --title=$WP_TITLE \
+								 --admin_user=$WP_ADMIN \
+								 --admin_email=$WP_ADMIN_EMAIL \
+								 --admin_password=$WP_ADMIN_PASSWORD
+	wp user create "$WP_USER" \
+								--path="/var/www/html" \
+								--user_pass="$WP_PASS" \
+								--user_email="$WP_EMAIL"
 else
 	echo "Wordpress is installed!"
 fi
