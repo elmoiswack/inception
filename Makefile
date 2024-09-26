@@ -2,14 +2,11 @@ DATA=/home/dhussain/data
 
 all: up
 
-up: build
-	docker compose -f ./srcs/docker-compose.yml $@
+up: $(DATA)
+	docker compose -f ./srcs/docker-compose.yml up --build
 
 down:
-	docker compose -f ./srcs/docker-compose.yml $@
-
-build: $(DATA)
-	docker compose -f ./srcs/docker-compose.yml $@
+	docker compose -f ./srcs/docker-compose.yml down
 
 $(DATA):
 	mkdir -p $(DATA)/wordpress $(DATA)/mariadb
@@ -23,4 +20,4 @@ fclean: clean
 
 re: clean all
 
-.PHONY: up down build clean fclean re
+.PHONY: up down clean fclean re
