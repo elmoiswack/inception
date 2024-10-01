@@ -3,17 +3,17 @@ DATA=/home/dhussain/data
 all: up
 
 up: $(DATA)
-	docker compose -f ./srcs/docker-compose.yml up --build
+	docker-compose -f ./srcs/docker-compose.yml up --build
 
 down:
-	docker compose -f ./srcs/docker-compose.yml down
+	docker-compose -f ./srcs/docker-compose.yml down
 
 $(DATA):
 	mkdir -p $(DATA)/wordpress $(DATA)/mariadb
 
 clean: down
 	rm -rf $(DATA)
-	docker compose -f ./srcs/docker-compose.yml down -v
+	docker-compose -f ./srcs/docker-compose.yml down -v
 
 fclean: clean
 	docker system prune -af

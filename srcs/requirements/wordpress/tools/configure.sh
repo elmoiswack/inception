@@ -1,6 +1,3 @@
-# Wait till the database runs.
-
-# Attempt to install wordpress!
 if [ ! -f "/var/www/html/wp-config.php" ]; then
 	echo "Installing wordpress from the $(whoami) user!"
 
@@ -30,5 +27,4 @@ else
 	echo "Wordpress is installed!"
 fi
 
-# And done...
 exec "$@"
